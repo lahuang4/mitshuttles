@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MIT Shuttles</string>
+    <string name="shuttle_select">Select a shuttle to view the full schedule and realtime map locations.</string>
+    <string name="title_activity_shuttle_schedule">Shuttle Schedule</string>
+</resources>
