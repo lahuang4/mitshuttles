@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/network_error_vertical_margin"
+        android:paddingLeft="@dimen/network_error_horizontal_margin"
+        android:paddingRight="@dimen/network_error_horizontal_margin"
+        android:paddingTop="@dimen/network_error_vertical_margin"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/network_error"
+        android:id="@+id/textView"
+        android:gravity="center" />
+</RelativeLayout>

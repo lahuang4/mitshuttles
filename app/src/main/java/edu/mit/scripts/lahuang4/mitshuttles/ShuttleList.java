@@ -27,6 +27,8 @@ public class ShuttleList extends AppCompatActivity {
 
     private static final String TAG = "ShuttleList";
 
+    private boolean configured = false;
+
     private String[] daytimeShuttleNames = {
             "Kendall to Charles Park",
             "Tech Shuttle",
@@ -35,10 +37,10 @@ public class ShuttleList extends AppCompatActivity {
             "EZRide - Morning"
     };
     private String[] nighttimeShuttleNames = {
-            "Saferide Boston East",
-            "Saferide Boston West",
-            "Saferide Somerville",
-            "Saferide Campus Shuttle"
+            "Boston East",
+            "Boston West",
+            "Somerville",
+            "Campus Shuttle"
     };
 
     private Retrofit retrofit;
@@ -58,32 +60,15 @@ public class ShuttleList extends AppCompatActivity {
         nextBus = retrofit.create(NextBus.class);
 
         getConfig();
-        Log.d(TAG, "Assembled config.");
-        for (String s : routes.keySet()) {
-            Log.d(TAG, s + ": " + routes.get(s));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // If we didn't manage to set up successfully previously, try again.
+        if (!configured) {
+            getConfig();
         }
-
-        // TODO: Populate menu based on NextBus config.
-        // Populate list with shuttles.
-        SeparatedListAdapter adapter = new SeparatedListAdapter(this);
-        adapter.addSection("Daytime Shuttles:", new ArrayAdapter<>(this, R.layout.list_item,
-                daytimeShuttleNames));
-        adapter.addSection("Nighttime Saferide Shuttles:", new ArrayAdapter(this,
-                R.layout.list_item, nighttimeShuttleNames));
-
-        setContentView(R.layout.activity_shuttle_list);
-        ListView shuttleListView = (ListView)findViewById(R.id.shuttle_list);
-        shuttleListView.setAdapter(adapter);
-
-        shuttleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String value = (String) parent.getItemAtPosition(position);
-                Intent intent = new Intent(parent.getContext(), ShuttleSchedule.class);
-                intent.putExtra("Route", value);
-                startActivity(intent);
-            }
-        });
     }
 
     @Root(name = "body")
@@ -97,6 +82,9 @@ public class ShuttleList extends AppCompatActivity {
 
     @Root(name = "route", strict = false)
     public static class Route {
+        @ElementList(inline = true)
+        List<Stop> stops;
+
         @Attribute
         String tag;
 
@@ -122,6 +110,21 @@ public class ShuttleList extends AppCompatActivity {
         String lonMax;
     }
 
+    @Root(name = "stop", strict = false)
+    public static class Stop {
+        @Attribute
+        String tag;
+
+        @Attribute
+        String title;
+
+        @Attribute
+        String lat;
+
+        @Attribute
+        String lon;
+    }
+
     // TODO: Get stop names for each route.
     private void getConfig() {
         Call<ConfigBody> call = nextBus.getConfig("routeConfig", "mit");
@@ -130,13 +133,52 @@ public class ShuttleList extends AppCompatActivity {
             public void onResponse(Response<ConfigBody> response) {
                 List<Route> routeList = response.body().routes;
                 for (Route r : routeList) {
+                    Log.d(TAG, "Adding route " + r.title);
+                    if (r.title.contains("Saferide")) {
+                        r.title = r.title.substring("Saferide ".length());
+                    }
                     routes.put(r.title, r);
                 }
+                Log.d(TAG, "Assembled config.");
+                configured = true;
+                for (String s : routes.keySet()) {
+                    String stops = "";
+                    for (Stop stop : routes.get(s).stops) {
+                        stops += stop.tag + ", ";
+                    }
+                    Log.d(TAG, s + ": " + stops);
+                }
+                buildShuttleList();
             }
 
             @Override
             public void onFailure(Throwable t) {
                 t.printStackTrace();
+                setContentView(R.layout.network_error_message);
+            }
+        });
+    }
+
+    private void buildShuttleList() {
+        // TODO: Populate menu based on NextBus config.
+        // Populate list with shuttles.
+        SeparatedListAdapter adapter = new SeparatedListAdapter(this);
+        adapter.addSection("Daytime Shuttles:", new ArrayAdapter<>(this, R.layout.list_item,
+                daytimeShuttleNames));
+        adapter.addSection("Nighttime Saferide Shuttles:", new ArrayAdapter(this,
+                R.layout.list_item, nighttimeShuttleNames));
+
+        setContentView(R.layout.activity_shuttle_list);
+        ListView shuttleListView = (ListView)findViewById(R.id.shuttle_list);
+        shuttleListView.setAdapter(adapter);
+
+        shuttleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String value = (String) parent.getItemAtPosition(position);
+                Intent intent = new Intent(parent.getContext(), ShuttleSchedule.class);
+                intent.putExtra("Route", value);
+                startActivity(intent);
             }
         });
     }

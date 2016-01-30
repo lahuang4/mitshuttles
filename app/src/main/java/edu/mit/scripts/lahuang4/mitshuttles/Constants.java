@@ -1,8 +1,5 @@
 package edu.mit.scripts.lahuang4.mitshuttles;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by Lauren on 1/29/2016.
  */

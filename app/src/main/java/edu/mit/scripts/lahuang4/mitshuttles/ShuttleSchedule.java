@@ -162,6 +162,7 @@ public class ShuttleSchedule extends AppCompatActivity {
             @Override
             public void onFailure(Throwable t) {
                 t.printStackTrace();
+                setContentView(R.layout.network_error_message);
             }
         });
     }

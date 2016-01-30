@@ -6,5 +6,7 @@
     <dimen name="activity_vertical_margin">0dp</dimen>
     <dimen name="shuttle_select_horizontal_margin">16dp</dimen>
     <dimen name="shuttle_select_vertical_margin">16dp</dimen>
+    <dimen name="network_error_horizontal_margin">20dp</dimen>
+    <dimen name="network_error_vertical_margin">20dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 </resources>
