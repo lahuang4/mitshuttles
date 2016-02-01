@@ -13,6 +13,7 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,11 +143,12 @@ public class ShuttleList extends AppCompatActivity {
                 Log.d(TAG, "Assembled config.");
                 configured = true;
                 for (String s : routes.keySet()) {
-                    String stops = "";
+                    String stopStr = "";
+                    List<String> stopList = new ArrayList<>();
                     for (Stop stop : routes.get(s).stops) {
-                        stops += stop.tag + ", ";
+                        stopStr += stop.tag + ", ";
                     }
-                    Log.d(TAG, s + ": " + stops);
+                    Log.d(TAG, s + ": " + stopStr);
                 }
                 buildShuttleList();
             }

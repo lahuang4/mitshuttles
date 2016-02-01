@@ -11,6 +11,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -55,8 +56,8 @@ public class ShuttleSchedule extends AppCompatActivity {
         @Attribute
         String copyright;
 
-        @Element(name = "predictions")
-        Schedule schedule;
+        @ElementList(inline = true)
+        List<Schedule> schedule;
     }
 
     @Root(name = "predictions", strict = false)
@@ -64,8 +65,8 @@ public class ShuttleSchedule extends AppCompatActivity {
         @Element(name = "direction", required = false)
         Direction direction;
 
-        @Element(name = "message", required = false)
-        Message message;
+        @ElementList(inline = true)
+        List<Message> message;
 
         @Attribute
         String agencyTitle;
@@ -141,30 +142,45 @@ public class ShuttleSchedule extends AppCompatActivity {
 
     private void refreshShuttleSchedule() {
         Log.d(TAG, "Getting schedule for " + route.tag);
-        Call<PredictionBody> call = nextBus.getPrediction("predictions", "mit", route.tag,
-                "mass77");
-        call.enqueue(new Callback<PredictionBody>() {
-            @Override
-            public void onResponse(Response<PredictionBody> response) {
-                Schedule schedule = response.body().schedule;
-                if (schedule.dirTitleBecauseNoPredictions != null) {
-                    Log.d(TAG, "Shuttle " + routeName + " is not currently running or NextBus is down.");
-                } else {
-                    Log.d(TAG, "Schedule message: " + schedule.message.text + ", priority " + schedule.message.priority);
-                    if (schedule.direction.predictions != null) {
-                        for (Prediction p : schedule.direction.predictions) {
-                            Log.d(TAG, "Schedule stop prediction: " + p.getMinutes() + " minutes, or " + p.getSeconds() + " seconds");
+        List<String> stops = new ArrayList<>();
+        for (ShuttleList.Stop stop : route.stops) {
+            stops.add(route.tag + "|" + stop.tag);
+        }
+        Call<PredictionBody> call = nextBus.getMultiplePredictions("predictionsForMultiStops", "mit", stops);
+//        ShuttleList.Stop stop = route.stops.get(0);
+//            Call<PredictionBody> call = nextBus.getPrediction("predictions", "mit", route.tag,
+//                    stop.tag);
+            call.enqueue(new Callback<PredictionBody>() {
+                @Override
+                public void onResponse(Response<PredictionBody> response) {
+                    for (Schedule schedule : response.body().schedule) {
+//                        Schedule schedule = response.body().schedule;
+                        if (schedule.dirTitleBecauseNoPredictions != null) {
+                            Log.d(TAG, "Shuttle " + routeName + " is not currently running or NextBus is down.");
+                        } else {
+                            for (Message message : schedule.message) {
+                                Log.d(TAG, "Schedule message: " + message.text + ", priority " + message.priority);
+                            }
+                            if (schedule.direction.predictions != null) {
+                                for (Prediction p : schedule.direction.predictions) {
+                                    Log.d(TAG, "Schedule stop prediction: " + p.getMinutes() + " minutes, or " + p.getSeconds() + " seconds");
+                                }
+                            }
+                            // TODO: Create visual elements on the view displaying the schedule
                         }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Throwable t) {
-                t.printStackTrace();
-                setContentView(R.layout.network_error_message);
-            }
-        });
+                @Override
+                public void onFailure(Throwable t) {
+                    t.printStackTrace();
+                    if (t.getMessage().contains("Element 'Error' does not have a match")) {
+                        Log.e(TAG, "Unable to retrieve information for current stop. Are you sure this stop is on the specified route?");
+                    } else {
+                        setContentView(R.layout.network_error_message);
+                    }
+                }
+            });
     }
 
 }

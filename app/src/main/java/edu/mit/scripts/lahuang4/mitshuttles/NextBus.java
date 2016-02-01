@@ -1,5 +1,7 @@
 package edu.mit.scripts.lahuang4.mitshuttles;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -17,4 +19,9 @@ public interface NextBus {
                                                        @Query("a") String agent,
                                                        @Query("r") String route,
                                                        @Query("s") String stop);
+
+    @GET("publicXMLFeed")
+    Call<ShuttleSchedule.PredictionBody> getMultiplePredictions(@Query("command") String command,
+                                                                @Query("a") String agent,
+                                                                @Query("stops") List<String> stops);
 }
