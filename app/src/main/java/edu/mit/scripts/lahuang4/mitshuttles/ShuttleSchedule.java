@@ -1,9 +1,12 @@
 package edu.mit.scripts.lahuang4.mitshuttles;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import org.simpleframework.xml.Attribute;
@@ -12,7 +15,9 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,19 +29,28 @@ public class ShuttleSchedule extends AppCompatActivity {
 
     private static final String TAG = "ShuttleSchedule";
 
+    private static Context context;
+    private static ListView shuttleStopList;
+
     private String routeName;
     private ShuttleList.Route route;
     private Retrofit retrofit;
     private NextBus nextBus;
 
+    private static final String ITEM_LEFT = "left";
+    private static final String ITEM_RIGHT = "right";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        context = this;
 
         routeName = getIntent().getStringExtra("Route");
         route = ShuttleList.routes.get(routeName);
         setContentView(R.layout.activity_shuttle_schedule);
         TextView shuttleScheduleName = (TextView)findViewById(R.id.shuttle_schedule_text_name);
+        shuttleStopList = (ListView)findViewById(R.id.shuttle_stops);
         shuttleScheduleName.setText(routeName);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -147,14 +161,11 @@ public class ShuttleSchedule extends AppCompatActivity {
             stops.add(route.tag + "|" + stop.tag);
         }
         Call<PredictionBody> call = nextBus.getMultiplePredictions("predictionsForMultiStops", "mit", stops);
-//        ShuttleList.Stop stop = route.stops.get(0);
-//            Call<PredictionBody> call = nextBus.getPrediction("predictions", "mit", route.tag,
-//                    stop.tag);
             call.enqueue(new Callback<PredictionBody>() {
                 @Override
                 public void onResponse(Response<PredictionBody> response) {
+                    List<Map<String, ?>> stops = new ArrayList<>();
                     for (Schedule schedule : response.body().schedule) {
-//                        Schedule schedule = response.body().schedule;
                         if (schedule.dirTitleBecauseNoPredictions != null) {
                             Log.d(TAG, "Shuttle " + routeName + " is not currently running or NextBus is down.");
                         } else {
@@ -165,10 +176,12 @@ public class ShuttleSchedule extends AppCompatActivity {
                                 for (Prediction p : schedule.direction.predictions) {
                                     Log.d(TAG, "Schedule stop prediction: " + p.getMinutes() + " minutes, or " + p.getSeconds() + " seconds");
                                 }
+                                stops.add(createItem(schedule.stopTitle, "" + schedule.direction.predictions.get(0).getMinutes()));
                             }
-                            // TODO: Create visual elements on the view displaying the schedule
                         }
                     }
+                    shuttleStopList.setAdapter(new SimpleAdapter(context, stops, R.layout.two_sided_list_item,
+                            new String[] { "left", "right" }, new int[] { R.id.two_sided_list_left, R.id.two_sided_list_right }));
                 }
 
                 @Override
@@ -181,6 +194,13 @@ public class ShuttleSchedule extends AppCompatActivity {
                     }
                 }
             });
+    }
+
+    private Map<String, ?> createItem(String left, String right) {
+        Map<String, String> item = new HashMap<>();
+        item.put(ITEM_LEFT, left);
+        item.put(ITEM_RIGHT, right);
+        return item;
     }
 
 }

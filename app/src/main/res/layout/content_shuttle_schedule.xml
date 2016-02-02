@@ -23,4 +23,21 @@
         android:id="@+id/shuttle_schedule_text_name"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/shuttle_select_vertical_margin"
+        android:paddingLeft="@dimen/shuttle_select_horizontal_margin"
+        android:paddingRight="@dimen/shuttle_select_horizontal_margin"
+        android:paddingTop="@dimen/shuttle_select_vertical_margin"
+        android:id="@+id/shuttle_schedule_text"
+        />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/shuttle_schedule_text"
+        android:id="@+id/shuttle_stops"
+        />
+
 </RelativeLayout>

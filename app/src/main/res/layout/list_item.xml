@@ -6,7 +6,8 @@
     android:id="@+id/list_item_title"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingTop="10dip"
-    android:paddingBottom="10dip"
-    android:paddingLeft="15dip"
-    android:textAppearance="?android:attr/textAppearanceLarge" />
+    android:paddingTop="@dimen/list_vertical_margin"
+    android:paddingBottom="@dimen/list_vertical_margin"
+    android:paddingLeft="@dimen/list_horizontal_margin"
+    android:paddingRight="@dimen/list_horizontal_margin"
+    android:textAppearance="?android:attr/textAppearanceMedium" />
