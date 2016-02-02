@@ -94,6 +94,12 @@ public class ShuttleSchedule extends AppCompatActivity {
             scheduledFuture.cancel(true);
         }
     }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        refresher.shutdown();
+    }
 
     @Root(name = "body")
     public static class PredictionBody {
