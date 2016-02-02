@@ -14,7 +14,9 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +42,16 @@ public class ShuttleSchedule extends AppCompatActivity {
     private static final String ITEM_LEFT = "left";
     private static final String ITEM_RIGHT = "right";
 
+    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         context = this;
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         routeName = getIntent().getStringExtra("Route");
         route = ShuttleList.routes.get(routeName);
@@ -52,9 +59,6 @@ public class ShuttleSchedule extends AppCompatActivity {
         TextView shuttleScheduleName = (TextView)findViewById(R.id.shuttle_schedule_text_name);
         shuttleStopList = (ListView)findViewById(R.id.shuttle_stops);
         shuttleScheduleName.setText(routeName);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.NEXTBUS_URL)
@@ -174,14 +178,17 @@ public class ShuttleSchedule extends AppCompatActivity {
                             }
                             if (schedule.direction.predictions != null) {
                                 for (Prediction p : schedule.direction.predictions) {
-                                    Log.d(TAG, "Schedule stop prediction: " + p.getMinutes() + " minutes, or " + p.getSeconds() + " seconds");
+                                    Log.d(TAG, "Schedule stop prediction: " + p.getMinutes() +
+                                            " minutes, or " + p.getSeconds() + " seconds");
                                 }
-                                stops.add(createItem(schedule.stopTitle, "" + schedule.direction.predictions.get(0).getMinutes()));
+                                stops.add(createItem(schedule.stopTitle,
+                                        getETA(schedule.direction.predictions.get(0).getMinutes())));
                             }
                         }
                     }
-                    shuttleStopList.setAdapter(new SimpleAdapter(context, stops, R.layout.two_sided_list_item,
-                            new String[] { "left", "right" }, new int[] { R.id.two_sided_list_left, R.id.two_sided_list_right }));
+                    shuttleStopList.setAdapter(new SimpleAdapter(context, stops,
+                            R.layout.two_sided_list_item, new String[] { ITEM_LEFT, ITEM_RIGHT },
+                            new int[] { R.id.two_sided_list_left, R.id.two_sided_list_right }));
                 }
 
                 @Override
@@ -201,6 +208,12 @@ public class ShuttleSchedule extends AppCompatActivity {
         item.put(ITEM_LEFT, left);
         item.put(ITEM_RIGHT, right);
         return item;
+    }
+
+    private String getETA(int minutesUntilArrival) {
+        Calendar now = Calendar.getInstance();
+        now.add(Calendar.MINUTE, minutesUntilArrival);
+        return timeFormat.format(now.getTime());
     }
 
 }
