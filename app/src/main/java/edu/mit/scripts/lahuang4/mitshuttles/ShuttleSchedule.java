@@ -20,6 +20,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,7 +42,10 @@ public class ShuttleSchedule extends AppCompatActivity {
     private ShuttleList.Route route;
     private Retrofit retrofit;
     private NextBus nextBus;
+    private ScheduledExecutorService refresher;
+    private ScheduledFuture scheduledFuture;
 
+    private static final int REFRESH_INTERVAL = 10;
     private static final String ITEM_LEFT = "left";
     private static final String ITEM_RIGHT = "right";
 
@@ -65,12 +72,27 @@ public class ShuttleSchedule extends AppCompatActivity {
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build();
         nextBus = retrofit.create(NextBus.class);
+
+        refresher = Executors.newScheduledThreadPool(1);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        refreshShuttleSchedule();
+        scheduledFuture = refresher.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                refreshShuttleSchedule();
+            }
+        }, 0, REFRESH_INTERVAL, TimeUnit.SECONDS);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (scheduledFuture != null) {
+            scheduledFuture.cancel(true);
+        }
     }
 
     @Root(name = "body")
