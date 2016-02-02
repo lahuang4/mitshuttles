@@ -65,7 +65,11 @@ public class ShuttleSchedule extends AppCompatActivity {
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build();
         nextBus = retrofit.create(NextBus.class);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         refreshShuttleSchedule();
     }
 
