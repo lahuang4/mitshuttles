@@ -30,12 +30,14 @@ public class ShuttleList extends AppCompatActivity {
 
     private boolean configured = false;
 
+    private static final String MIT = "mit";
+    // TODO: Support Charles River EZRide shuttles.
     private String[] daytimeShuttleNames = {
             "Kendall to Charles Park",
             "Tech Shuttle",
-            "EZRide - Evening",
-            "EZRide - Midday",
-            "EZRide - Morning"
+//            "EZRide - Evening",
+//            "EZRide - Midday",
+//            "EZRide - Morning"
     };
     private String[] nighttimeShuttleNames = {
             "Boston East",
@@ -126,9 +128,8 @@ public class ShuttleList extends AppCompatActivity {
         String lon;
     }
 
-    // TODO: Get stop names for each route.
     private void getConfig() {
-        Call<ConfigBody> call = nextBus.getConfig("routeConfig", "mit");
+        Call<ConfigBody> call = nextBus.getConfig("routeConfig", MIT);
         call.enqueue(new Callback<ConfigBody>() {
             @Override
             public void onResponse(Response<ConfigBody> response) {
@@ -144,7 +145,6 @@ public class ShuttleList extends AppCompatActivity {
                 configured = true;
                 for (String s : routes.keySet()) {
                     String stopStr = "";
-                    List<String> stopList = new ArrayList<>();
                     for (Stop stop : routes.get(s).stops) {
                         stopStr += stop.tag + ", ";
                     }
@@ -179,6 +179,7 @@ public class ShuttleList extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String value = (String) parent.getItemAtPosition(position);
                 Intent intent = new Intent(parent.getContext(), ShuttleSchedule.class);
+                intent.putExtra("Agency", MIT);
                 intent.putExtra("Route", value);
                 startActivity(intent);
             }

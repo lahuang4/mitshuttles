@@ -38,7 +38,7 @@ public class ShuttleSchedule extends AppCompatActivity {
     private static Context context;
     private static ListView shuttleStopList;
 
-    private String routeName;
+    private String agency, routeName;
     private ShuttleList.Route route;
     private Retrofit retrofit;
     private NextBus nextBus;
@@ -57,6 +57,7 @@ public class ShuttleSchedule extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         context = this;
+        agency = getIntent().getStringExtra("Agency");
         routeName = getIntent().getStringExtra("Route");
         route = ShuttleList.routes.get(routeName);
         setContentView(R.layout.activity_shuttle_schedule);
@@ -196,7 +197,8 @@ public class ShuttleSchedule extends AppCompatActivity {
         for (ShuttleList.Stop stop : route.stops) {
             stops.add(route.tag + "|" + stop.tag);
         }
-        Call<PredictionBody> call = nextBus.getMultiplePredictions("predictionsForMultiStops", "mit", stops);
+        Call<PredictionBody> call = nextBus.getMultiplePredictions("predictionsForMultiStops",
+                agency, stops);
             call.enqueue(new Callback<PredictionBody>() {
                 @Override
                 public void onResponse(Response<PredictionBody> response) {
@@ -242,7 +244,8 @@ public class ShuttleSchedule extends AppCompatActivity {
                 public void onFailure(Throwable t) {
                     t.printStackTrace();
                     if (t.getMessage().contains("Element 'Error' does not have a match")) {
-                        Log.e(TAG, "Unable to retrieve information for current stop. Are you sure this stop is on the specified route?");
+                        Log.e(TAG, "Unable to retrieve information for current stop. " +
+                                "Are you sure this stop is on the specified route?");
                     } else {
                         setContentView(R.layout.network_error_message);
                     }
