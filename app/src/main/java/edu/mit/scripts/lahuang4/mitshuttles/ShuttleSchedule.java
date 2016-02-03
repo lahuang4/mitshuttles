@@ -56,13 +56,12 @@ public class ShuttleSchedule extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         context = this;
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         routeName = getIntent().getStringExtra("Route");
         route = ShuttleList.routes.get(routeName);
         setContentView(R.layout.activity_shuttle_schedule);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         TextView shuttleScheduleName = (TextView)findViewById(R.id.shuttle_schedule_text_name);
         shuttleStopList = (ListView)findViewById(R.id.shuttle_stops);
         shuttleScheduleName.setText(routeName);
@@ -94,7 +93,7 @@ public class ShuttleSchedule extends AppCompatActivity {
             scheduledFuture.cancel(true);
         }
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -200,7 +199,7 @@ public class ShuttleSchedule extends AppCompatActivity {
             call.enqueue(new Callback<PredictionBody>() {
                 @Override
                 public void onResponse(Response<PredictionBody> response) {
-                    List<Map<String, ?>> stops = new ArrayList<>();
+                    Map<String, String> stopMap = new HashMap<>();
                     for (Schedule schedule : response.body().schedule) {
                         if (schedule.dirTitleBecauseNoPredictions != null) {
                             Log.d(TAG, "Shuttle " + routeName + " is not currently running or NextBus is down.");
@@ -213,10 +212,13 @@ public class ShuttleSchedule extends AppCompatActivity {
                                     Log.d(TAG, "Schedule stop prediction: " + p.getMinutes() +
                                             " minutes, or " + p.getSeconds() + " seconds");
                                 }
-                                stops.add(createItem(schedule.stopTitle,
-                                        getETA(schedule.direction.predictions.get(0).getMinutes())));
+                                stopMap.put(schedule.stopTag, getETA(schedule.direction.predictions.get(0).getMinutes()));
                             }
                         }
+                    }
+                    List<Map<String, ?>> stops = new ArrayList<>();
+                    for (ShuttleList.Stop stop : route.stops) {
+                        stops.add(createItem(stop.title, stopMap.get(stop.tag)));
                     }
                     shuttleStopList.setAdapter(new SimpleAdapter(context, stops,
                             R.layout.two_sided_list_item, new String[] { ITEM_LEFT, ITEM_RIGHT },

@@ -2,24 +2,38 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">
-    <TextView
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/two_sided_list_left"
-        android:layout_alignParentLeft="true"
-        android:paddingTop="@dimen/list_vertical_margin"
-        android:paddingBottom="@dimen/list_vertical_margin"
-        android:paddingLeft="@dimen/list_horizontal_margin"
-        android:paddingRight="@dimen/list_horizontal_margin"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
-    <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/two_sided_list_icon"
+        android:src="@drawable/shuttle"
+        android:paddingTop="@dimen/icon_vertical_margin"
+        android:paddingBottom="@dimen/icon_vertical_margin"
+        android:paddingLeft="@dimen/icon_horizontal_margin"
+        android:paddingRight="@dimen/icon_horizontal_margin"
+        android:gravity="center"/>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/two_sided_list_right"
-        android:layout_alignParentRight="true"
-        android:paddingTop="@dimen/list_vertical_margin"
-        android:paddingBottom="@dimen/list_vertical_margin"
-        android:paddingLeft="@dimen/list_horizontal_margin"
-        android:paddingRight="@dimen/list_horizontal_margin"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:layout_toRightOf="@id/two_sided_list_icon">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/two_sided_list_left"
+            android:layout_alignParentLeft="true"
+            android:paddingTop="@dimen/list_vertical_margin"
+            android:paddingBottom="@dimen/list_vertical_margin"
+            android:paddingRight="@dimen/list_horizontal_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/two_sided_list_right"
+            android:layout_alignParentRight="true"
+            android:paddingTop="@dimen/list_vertical_margin"
+            android:paddingBottom="@dimen/list_vertical_margin"
+            android:paddingLeft="@dimen/list_horizontal_margin"
+            android:paddingRight="@dimen/list_horizontal_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+    </RelativeLayout>
 </RelativeLayout>
