@@ -46,6 +46,7 @@ public class ShuttleSchedule extends AppCompatActivity {
     private ScheduledFuture scheduledFuture;
 
     private static final int REFRESH_INTERVAL = 10;
+    private static final String ITEM_ICON = "icon";
     private static final String ITEM_LEFT = "left";
     private static final String ITEM_RIGHT = "right";
 
@@ -200,6 +201,7 @@ public class ShuttleSchedule extends AppCompatActivity {
                 @Override
                 public void onResponse(Response<PredictionBody> response) {
                     Map<String, String> stopMap = new HashMap<>();
+                    Map<String, Integer> stopSeconds = new HashMap<>();
                     for (Schedule schedule : response.body().schedule) {
                         if (schedule.dirTitleBecauseNoPredictions != null) {
                             Log.d(TAG, "Shuttle " + routeName + " is not currently running or NextBus is down.");
@@ -212,17 +214,28 @@ public class ShuttleSchedule extends AppCompatActivity {
                                     Log.d(TAG, "Schedule stop prediction: " + p.getMinutes() +
                                             " minutes, or " + p.getSeconds() + " seconds");
                                 }
-                                stopMap.put(schedule.stopTag, getETA(schedule.direction.predictions.get(0).getMinutes()));
+                                stopMap.put(schedule.stopTag,
+                                        getETA(schedule.direction.predictions.get(0).getMinutes()));
+                                stopSeconds.put(schedule.stopTag,
+                                        schedule.direction.predictions.get(0).getSeconds());
                             }
                         }
                     }
                     List<Map<String, ?>> stops = new ArrayList<>();
-                    for (ShuttleList.Stop stop : route.stops) {
-                        stops.add(createItem(stop.title, stopMap.get(stop.tag)));
+                    for (int i = 0; i < route.stops.size(); i++) {
+                        ShuttleList.Stop stop = route.stops.get(i);
+                        if (stopMap.containsKey(stop.tag)) {
+                            stops.add(createItem(isArriving(i, stopSeconds), stop.title,
+                                    stopMap.get(stop.tag)));
+                        } else {
+                            stops.add(createItem(false, stop.title, ""));
+                        }
                     }
                     shuttleStopList.setAdapter(new SimpleAdapter(context, stops,
-                            R.layout.two_sided_list_item, new String[] { ITEM_LEFT, ITEM_RIGHT },
-                            new int[] { R.id.two_sided_list_left, R.id.two_sided_list_right }));
+                            R.layout.two_sided_list_item,
+                            new String[]{ITEM_ICON, ITEM_LEFT, ITEM_RIGHT},
+                            new int[]{R.id.two_sided_list_icon, R.id.two_sided_list_left,
+                                    R.id.two_sided_list_right}));
                 }
 
                 @Override
@@ -237,8 +250,13 @@ public class ShuttleSchedule extends AppCompatActivity {
             });
     }
 
-    private Map<String, ?> createItem(String left, String right) {
+    private Map<String, ?> createItem(boolean arriving, String left, String right) {
         Map<String, String> item = new HashMap<>();
+        if (arriving) {
+            item.put(ITEM_ICON, Integer.toString(R.drawable.shuttle_green));
+        } else {
+            item.put(ITEM_ICON, Integer.toString(R.drawable.shuttle));
+        }
         item.put(ITEM_LEFT, left);
         item.put(ITEM_RIGHT, right);
         return item;
@@ -248,6 +266,32 @@ public class ShuttleSchedule extends AppCompatActivity {
         Calendar now = Calendar.getInstance();
         now.add(Calendar.MINUTE, minutesUntilArrival);
         return timeFormat.format(now.getTime());
+    }
+
+    private boolean isArriving(int index, Map<String, Integer> stopSeconds) {
+        int secondsUntilArrival = stopSeconds.get(route.stops.get(index).tag);
+        if (stopSeconds.size() <= 1) {
+            return true;
+        }
+        if (index == 0) {
+            if (stopSeconds.get(route.stops.get(route.stops.size()-1).tag) > secondsUntilArrival &&
+                    stopSeconds.get(route.stops.get(index + 1).tag) > secondsUntilArrival) {
+                return true;
+            }
+            return false;
+        }
+        if (index == stopSeconds.size()-1) {
+            if (stopSeconds.get(route.stops.get(0).tag) > secondsUntilArrival &&
+                    stopSeconds.get(route.stops.get(index - 1).tag) > secondsUntilArrival) {
+                return true;
+            }
+            return false;
+        }
+        if (stopSeconds.get(route.stops.get(index - 1).tag) > secondsUntilArrival &&
+                stopSeconds.get(route.stops.get(index + 1).tag) > secondsUntilArrival) {
+            return true;
+        }
+        return false;
     }
 
 }

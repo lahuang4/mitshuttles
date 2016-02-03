@@ -6,7 +6,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/two_sided_list_icon"
-        android:src="@drawable/shuttle"
         android:paddingTop="@dimen/icon_vertical_margin"
         android:paddingBottom="@dimen/icon_vertical_margin"
         android:paddingLeft="@dimen/icon_horizontal_margin"
