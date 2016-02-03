@@ -3,4 +3,12 @@
     <string name="shuttle_select">Select a shuttle to view the full schedule and realtime map locations.</string>
     <string name="title_activity_shuttle_schedule">Shuttle Schedule</string>
     <string name="network_error">"MIT Shuttles is unable to connect to the internet. Check your network connection and try again."</string>
+
+    <string name="kendchar_text">Runs weekdays 10:30am-3:30pm.\nRoute loop repeats every 20 minutes.</string>
+    <string name="tech_text">Runs weekdays 6:15am-7:10pm.\nRoute loop repeats every 20 minutes.</string>
+    <string name="saferidebostone_text">Runs 6pm-2:30am Sun-Wed, 6pm-3:30am Thu-Sat, except summer and holiday breaks.\nRoute loop repeats every 30 minutes.</string>
+    <string name="saferidebostonw_text">Runs 6pm-2:30am Sun-Wed, 6pm-3:30am Thu-Sat, except summer and holiday breaks.\nRoute loop repeats every 30 minutes.</string>
+    <string name="saferidesomerville_text">Runs 6pm-2:30am Sun-Wed, 6pm-3:30am Thu-Sat, except summer and holiday breaks.\nRoute loop repeats every 29 minutes.</string>
+    <string name="saferidecampshut_text">Runs 6pm-2:30am Sun-Wed, 6pm-3:30am Thu-Sat, except summer and holiday breaks.\nRoute loop repeats every 13 minutes.</string>
+
 </resources>

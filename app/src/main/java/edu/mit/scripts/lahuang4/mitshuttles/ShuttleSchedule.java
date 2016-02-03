@@ -65,8 +65,10 @@ public class ShuttleSchedule extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         TextView shuttleScheduleName = (TextView)findViewById(R.id.shuttle_schedule_text_name);
-        shuttleStopList = (ListView)findViewById(R.id.shuttle_stops);
         shuttleScheduleName.setText(routeName);
+        TextView shuttleScheduleText = (TextView)findViewById(R.id.shuttle_schedule_text);
+        shuttleScheduleText.setText(getString(ShuttleList.descriptions.get(routeName)));
+        shuttleStopList = (ListView)findViewById(R.id.shuttle_stops);
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.NEXTBUS_URL)

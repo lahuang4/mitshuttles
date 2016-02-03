@@ -49,6 +49,7 @@ public class ShuttleList extends AppCompatActivity {
     private Retrofit retrofit;
     private NextBus nextBus;
     static Map<String, Route> routes;
+    static Map<String, Integer> descriptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,13 @@ public class ShuttleList extends AppCompatActivity {
 
         // Get the NextBus route configuration.
         routes = new HashMap<>();
+        descriptions = new HashMap<>();
+        descriptions.put("Kendall to Charles Park", R.string.kendchar_text);
+        descriptions.put("Tech Shuttle", R.string.tech_text);
+        descriptions.put("Boston East", R.string.saferidebostone_text);
+        descriptions.put("Boston West", R.string.saferidebostonw_text);
+        descriptions.put("Somerville", R.string.saferidesomerville_text);
+        descriptions.put("Campus Shuttle", R.string.saferidecampshut_text);
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.NEXTBUS_URL)
                 .addConverterFactory(SimpleXmlConverterFactory.create())
