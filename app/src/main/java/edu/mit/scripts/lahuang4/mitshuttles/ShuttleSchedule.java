@@ -208,10 +208,12 @@ public class ShuttleSchedule extends AppCompatActivity {
                     Map<String, Integer> stopSeconds = new HashMap<>();
                     for (Schedule schedule : response.body().schedule) {
                         if (schedule.dirTitleBecauseNoPredictions != null) {
-                            Log.d(TAG, "Shuttle " + routeName + " is not currently running or NextBus is down.");
+                            Log.d(TAG, "Shuttle " + routeName +
+                                    " is not currently running or NextBus is down.");
                         } else {
                             for (Message message : schedule.message) {
-                                Log.d(TAG, "Schedule message: " + message.text + ", priority " + message.priority);
+                                Log.d(TAG, "Schedule message: " + message.text + ", priority " +
+                                        message.priority);
                             }
                             if (schedule.direction.predictions != null) {
                                 for (Prediction p : schedule.direction.predictions) {
