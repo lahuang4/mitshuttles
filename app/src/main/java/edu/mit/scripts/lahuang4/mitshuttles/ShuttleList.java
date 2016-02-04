@@ -35,6 +35,7 @@ public class ShuttleList extends AppCompatActivity {
     private String[] daytimeShuttleNames = {
             "Kendall to Charles Park",
             "Tech Shuttle",
+            "Boston Daytime",
 //            "EZRide - Evening",
 //            "EZRide - Midday",
 //            "EZRide - Morning"
@@ -60,6 +61,7 @@ public class ShuttleList extends AppCompatActivity {
         descriptions = new HashMap<>();
         descriptions.put("Kendall to Charles Park", R.string.kendchar_text);
         descriptions.put("Tech Shuttle", R.string.tech_text);
+        descriptions.put("Boston Daytime", R.string.boston_text);
         descriptions.put("Boston East", R.string.saferidebostone_text);
         descriptions.put("Boston West", R.string.saferidebostonw_text);
         descriptions.put("Somerville", R.string.saferidesomerville_text);
