@@ -52,6 +52,7 @@ public class ShuttleSchedule extends AppCompatActivity {
     private static final String ITEM_ICON = "icon";
     private static final String ITEM_LEFT = "left";
     private static final String ITEM_RIGHT = "right";
+    private static final String ITEM_RIGHT_SELECT = "right_select";
 
     private static final SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
 
@@ -261,9 +262,9 @@ public class ShuttleSchedule extends AppCompatActivity {
                     }
                     shuttleStopList.setAdapter(new SimpleAdapter(context, stops,
                             R.layout.two_sided_list_item,
-                            new String[]{ITEM_ICON, ITEM_LEFT, ITEM_RIGHT},
+                            new String[]{ITEM_ICON, ITEM_LEFT, ITEM_RIGHT, ITEM_RIGHT_SELECT},
                             new int[]{R.id.two_sided_list_icon, R.id.two_sided_list_left,
-                                    R.id.two_sided_list_right}));
+                                    R.id.two_sided_list_right, R.id.two_sided_list_right_select}));
                 }
 
                 @Override
@@ -283,11 +284,14 @@ public class ShuttleSchedule extends AppCompatActivity {
         Map<String, String> item = new HashMap<>();
         if (arriving) {
             item.put(ITEM_ICON, Integer.toString(R.drawable.shuttle_green));
+            item.put(ITEM_RIGHT_SELECT, right);
+            item.put(ITEM_RIGHT, "");
         } else {
             item.put(ITEM_ICON, Integer.toString(R.drawable.shuttle));
+            item.put(ITEM_RIGHT_SELECT, "");
+            item.put(ITEM_RIGHT, right);
         }
         item.put(ITEM_LEFT, left);
-        item.put(ITEM_RIGHT, right);
         return item;
     }
 
