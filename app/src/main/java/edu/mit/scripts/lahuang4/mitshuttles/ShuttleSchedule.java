@@ -54,7 +54,7 @@ public class ShuttleSchedule extends AppCompatActivity {
     private static final String ITEM_RIGHT = "right";
     private static final String ITEM_RIGHT_SELECT = "right_select";
 
-    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
+    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm aa");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
