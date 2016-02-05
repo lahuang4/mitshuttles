@@ -303,22 +303,32 @@ public class ShuttleSchedule extends AppCompatActivity {
             return true;
         }
         if (index == 0) {
-            if (stopSeconds.get(route.stops.get(route.stops.size()-1).tag) > secondsUntilArrival &&
-                    stopSeconds.get(route.stops.get(index + 1).tag) > secondsUntilArrival) {
-                return true;
+            if (stopSeconds.containsKey(route.stops.get(route.stops.size()-1).tag) &&
+                    stopSeconds.containsKey(route.stops.get(index + 1).tag)) {
+                if (stopSeconds.get(route.stops.get(route.stops.size() - 1).tag) >
+                        secondsUntilArrival && stopSeconds.get(route.stops.get(index + 1).tag) >
+                        secondsUntilArrival) {
+                    return true;
+                }
             }
             return false;
         }
         if (index == stopSeconds.size()-1) {
-            if (stopSeconds.get(route.stops.get(0).tag) > secondsUntilArrival &&
-                    stopSeconds.get(route.stops.get(index - 1).tag) > secondsUntilArrival) {
-                return true;
+            if (stopSeconds.containsKey(route.stops.get(0).tag) &&
+                    stopSeconds.containsKey(route.stops.get(index - 1).tag)) {
+                if (stopSeconds.get(route.stops.get(0).tag) > secondsUntilArrival &&
+                        stopSeconds.get(route.stops.get(index - 1).tag) > secondsUntilArrival) {
+                    return true;
+                }
             }
             return false;
         }
-        if (stopSeconds.get(route.stops.get(index - 1).tag) > secondsUntilArrival &&
-                stopSeconds.get(route.stops.get(index + 1).tag) > secondsUntilArrival) {
-            return true;
+        if (stopSeconds.containsKey(route.stops.get(index - 1).tag) &&
+                stopSeconds.containsKey(route.stops.get(index + 1).tag)) {
+            if (stopSeconds.get(route.stops.get(index - 1).tag) > secondsUntilArrival &&
+                    stopSeconds.get(route.stops.get(index + 1).tag) > secondsUntilArrival) {
+                return true;
+            }
         }
         return false;
     }
