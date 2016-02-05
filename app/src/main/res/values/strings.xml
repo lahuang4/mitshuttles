@@ -4,6 +4,8 @@
     <string name="title_activity_shuttle_schedule">Shuttle Schedule</string>
     <string name="network_error">"MIT Shuttles is unable to connect to the internet. Check your network connection and try again."</string>
 
+    <string name="menu_map">Open Map</string>
+
     <string name="kendchar_text">Runs weekdays 10:30am-3:30pm.\nRoute loop repeats every 20 minutes.</string>
     <string name="tech_text">Runs weekdays 6:15am-7:10pm.\nRoute loop repeats every 20 minutes.</string>
     <string name="boston_text">Runs weekdays 8am-5:54pm, from September through May.\nRoute loop repeats every 30 minutes.</string>

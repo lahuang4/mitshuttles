@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -77,6 +79,22 @@ public class ShuttleSchedule extends AppCompatActivity {
         nextBus = retrofit.create(NextBus.class);
 
         refresher = Executors.newScheduledThreadPool(1);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.schedule_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_map:
+                Log.d(TAG, "Open Map selected.");
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
