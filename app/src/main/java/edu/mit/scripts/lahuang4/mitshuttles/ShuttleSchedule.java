@@ -1,6 +1,7 @@
 package edu.mit.scripts.lahuang4.mitshuttles;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -91,7 +92,10 @@ public class ShuttleSchedule extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_map:
-                Log.d(TAG, "Open Map selected.");
+                Intent intent = new Intent(context, MapActivity.class);
+                intent.putExtra("Agency", agency);
+                intent.putExtra("Route Tag", route.tag);
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
