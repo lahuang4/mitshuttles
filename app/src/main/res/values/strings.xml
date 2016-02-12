@@ -17,7 +17,7 @@
     <string name="saferidesomerville_text">Runs 6pm-2:30am Sun-Wed, 6pm-3:30am Thu-Sat, except summer and holiday breaks.\nRoute loop repeats every 29 minutes.</string>
     <string name="saferidecampshut_text">Runs 6pm-2:30am Sun-Wed, 6pm-3:30am Thu-Sat, except summer and holiday breaks.\nRoute loop repeats every 13 minutes.</string>
     <string name="evening_text">Runs weekdays 3pm-8pm, except holiday breaks.\nRoute loop repeats every 49-56 minutes.</string>
-    <string name="one_text">The 1 Bus is a fickle creature. Nobody really knows when it comes or goes.</string>
+    <string name="one_text">Runs 4:37am-2:37am Mon-Fri, 4:40am-2:50am Sat, 6am-1:32am Sun.\nRoute loop repeats every 56 minutes.</string>
     <string name="traderjwf_text">Runs Sundays 11:30am-4:30pm, except summer breaks.\nRoute loop repeats every 43 minutes.</string>
 
 </resources>
