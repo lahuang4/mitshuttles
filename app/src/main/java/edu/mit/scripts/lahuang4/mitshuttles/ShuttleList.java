@@ -51,7 +51,8 @@ public class ShuttleList extends AppCompatActivity {
             "EZRide - Evening"
     };
     private String[] otherShuttleNames = {
-            "1 Bus"
+            "1 Bus",
+            "Trader Joe's - Whole Foods"
     };
 
     private Retrofit retrofit;
@@ -82,6 +83,7 @@ public class ShuttleList extends AppCompatActivity {
         descriptions.put("Campus Shuttle", R.string.saferidecampshut_text);
         descriptions.put("EZRide - Evening", R.string.evening_text);
         descriptions.put("1 Bus", R.string.one_text);
+        descriptions.put("Trader Joe's - Whole Foods", R.string.traderjwf_text);
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.NEXTBUS_URL)
                 .addConverterFactory(SimpleXmlConverterFactory.create())
