@@ -239,12 +239,6 @@ public class ShuttleSchedule extends AppCompatActivity {
                             Log.d(TAG, "Shuttle " + routeName +
                                     " is not currently running or NextBus is down.");
                         } else {
-                            if (schedule.message != null) {
-                                for (Message message : schedule.message) {
-                                    Log.d(TAG, "Schedule message: " + message.text + ", priority " +
-                                            message.priority);
-                                }
-                            }
                             if (schedule.direction.predictions != null) {
                                 for (Prediction p : schedule.direction.predictions) {
                                     Log.d(TAG, "Schedule stop prediction: " + p.getMinutes() +
