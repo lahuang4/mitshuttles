@@ -30,14 +30,9 @@ public class MapActivity extends AppCompatActivity {
             }
 
             @Override
-//            public void onReceivedError(WebView view, WebResourceRequest request,
-//                                        WebResourceError error) {
             public void onReceivedError(WebView view,int errorCode, String description, String failingUrl) {
                 setContentView(R.layout.network_error_message);
             }
-
-//            @Override
-//            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {}
         });
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl("http://www.nextbus.com/googleMap/?a=" + agency + "&r=" + routeTag);
