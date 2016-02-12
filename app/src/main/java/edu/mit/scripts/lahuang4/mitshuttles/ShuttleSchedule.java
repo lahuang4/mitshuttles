@@ -255,7 +255,11 @@ public class ShuttleSchedule extends AppCompatActivity {
                     for (int i = 0; i < route.stops.size(); i++) {
                         ShuttleList.Stop stop = route.stops.get(i);
                         String title = stop.title;
-                        title = title.replaceAll("Massachusetts", "Mass");
+                        if (title.equals("Simmons hall")) {
+                            title = "Simmons Hall";
+                        } else {
+                            title = title.replaceAll("Massachusetts", "Mass");
+                        }
                         if (stopMap.containsKey(stop.tag)) {
                             stops.add(createItem(isArriving(i, stopSeconds), title,
                                     stopMap.get(stop.tag)));
