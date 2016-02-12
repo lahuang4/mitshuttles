@@ -47,6 +47,8 @@ public class ShuttleSchedule extends AppCompatActivity {
     private NextBus nextBus;
     private ScheduledExecutorService refresher;
     private ScheduledFuture scheduledFuture;
+    private List<Map<String, ?>> adapterStops = new ArrayList<>();
+    private SimpleAdapter listAdapter;
 
     private static final int REFRESH_INTERVAL = 10;
     private static final String ITEM_ICON = "icon";
@@ -251,7 +253,7 @@ public class ShuttleSchedule extends AppCompatActivity {
                             }
                         }
                     }
-                    List<Map<String, ?>> stops = new ArrayList<>();
+                    adapterStops.clear();
                     for (int i = 0; i < route.stops.size(); i++) {
                         ShuttleList.Stop stop = route.stops.get(i);
                         String title = stop.title;
@@ -261,17 +263,23 @@ public class ShuttleSchedule extends AppCompatActivity {
                             title = title.replaceAll("Massachusetts", "Mass");
                         }
                         if (stopMap.containsKey(stop.tag)) {
-                            stops.add(createItem(isArriving(i, stopSeconds), title,
+                            adapterStops.add(createItem(isArriving(i, stopSeconds), title,
                                     stopMap.get(stop.tag)));
                         } else {
-                            stops.add(createItem(false, title, ""));
+                            adapterStops.add(createItem(false, title, ""));
                         }
                     }
-                    shuttleStopList.setAdapter(new SimpleAdapter(context, stops,
-                            R.layout.two_sided_list_item,
-                            new String[]{ITEM_ICON, ITEM_LEFT, ITEM_RIGHT, ITEM_RIGHT_SELECT},
-                            new int[]{R.id.two_sided_list_icon, R.id.two_sided_list_left,
-                                    R.id.two_sided_list_right, R.id.two_sided_list_right_select}));
+                    if (listAdapter == null) {
+                        listAdapter = new SimpleAdapter(context, adapterStops,
+                                R.layout.two_sided_list_item,
+                                new String[]{ITEM_ICON, ITEM_LEFT, ITEM_RIGHT, ITEM_RIGHT_SELECT},
+                                new int[]{R.id.two_sided_list_icon, R.id.two_sided_list_left,
+                                        R.id.two_sided_list_right,
+                                        R.id.two_sided_list_right_select});
+                        shuttleStopList.setAdapter(listAdapter);
+                    } else {
+                        listAdapter.notifyDataSetChanged();
+                    }
                 }
 
                 @Override
