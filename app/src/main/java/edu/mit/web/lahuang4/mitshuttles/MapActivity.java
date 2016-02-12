@@ -1,10 +1,8 @@
-package edu.mit.scripts.lahuang4.mitshuttles;
+package edu.mit.web.lahuang4.mitshuttles;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 

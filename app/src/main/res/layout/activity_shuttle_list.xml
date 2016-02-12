@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="edu.mit.scripts.lahuang4.mitshuttles.ShuttleList">
+    tools:context="edu.mit.web.lahuang4.mitshuttles.ShuttleList">
 
     <TextView
         android:layout_width="match_parent"

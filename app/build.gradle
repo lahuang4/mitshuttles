@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "edu.mit.scripts.lahuang4.mitshuttles"
+        applicationId "edu.mit.web.lahuang4.mitshuttles"
         minSdkVersion 8
         targetSdkVersion 23
         versionCode 4

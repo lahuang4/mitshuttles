@@ -1,4 +1,4 @@
-package edu.mit.scripts.lahuang4.mitshuttles;
+package edu.mit.web.lahuang4.mitshuttles;
 
 import android.content.Context;
 import android.content.Intent;

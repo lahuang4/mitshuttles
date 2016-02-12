@@ -1,4 +1,4 @@
-package edu.mit.scripts.lahuang4.mitshuttles;
+package edu.mit.web.lahuang4.mitshuttles;
 
 /**
  * Created by Lauren on 1/29/2016.

@@ -1,4 +1,4 @@
-package edu.mit.scripts.lahuang4.mitshuttles;
+package edu.mit.web.lahuang4.mitshuttles;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +13,6 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
