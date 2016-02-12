@@ -10,9 +10,13 @@
     <string name="kendchar_text">Runs weekdays 10:30am-3:30pm.\nRoute loop repeats every 20 minutes.</string>
     <string name="tech_text">Runs weekdays 6:15am-7:10pm.\nRoute loop repeats every 20 minutes.</string>
     <string name="boston_text">Runs weekdays 8am-5:54pm, from September through May.\nRoute loop repeats every 30 minutes.</string>
+    <string name="morning_text">Runs weekdays 6:20am-10:50am, except holiday breaks.\nRoute loop repeats every 49-56 minutes.</string>
+    <string name="midday_text">Runs weekdays 10:44am-3pm.\nRoute loop repeats every 16-20 minutes.</string>
     <string name="saferidebostone_text">Runs 6pm-2:30am Sun-Wed, 6pm-3:30am Thu-Sat, except summer and holiday breaks.\nRoute loop repeats every 30 minutes.</string>
     <string name="saferidebostonw_text">Runs 6pm-2:30am Sun-Wed, 6pm-3:30am Thu-Sat, except summer and holiday breaks.\nRoute loop repeats every 30 minutes.</string>
     <string name="saferidesomerville_text">Runs 6pm-2:30am Sun-Wed, 6pm-3:30am Thu-Sat, except summer and holiday breaks.\nRoute loop repeats every 29 minutes.</string>
     <string name="saferidecampshut_text">Runs 6pm-2:30am Sun-Wed, 6pm-3:30am Thu-Sat, except summer and holiday breaks.\nRoute loop repeats every 13 minutes.</string>
+    <string name="evening_text">Runs weekdays 3pm-8pm, except holiday breaks.\nRoute loop repeats every 49-56 minutes.</string>
+    <string name="one_text">The 1 Bus is a fickle creature. Nobody really knows when it comes or goes.</string>
 
 </resources>

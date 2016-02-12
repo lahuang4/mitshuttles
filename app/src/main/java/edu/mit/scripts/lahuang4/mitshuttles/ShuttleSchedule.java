@@ -141,7 +141,7 @@ public class ShuttleSchedule extends AppCompatActivity {
         @Element(name = "direction", required = false)
         Direction direction;
 
-        @ElementList(inline = true)
+        @ElementList(inline = true, required = false)
         List<Message> message;
 
         @Attribute
@@ -181,7 +181,7 @@ public class ShuttleSchedule extends AppCompatActivity {
         String priority;
     }
 
-    @Root(name = "prediction")
+    @Root(name = "prediction", strict = false)
     public static class Prediction {
         @Attribute
         String epochTime;
@@ -229,14 +229,21 @@ public class ShuttleSchedule extends AppCompatActivity {
                 public void onResponse(Response<PredictionBody> response) {
                     Map<String, String> stopMap = new HashMap<>();
                     Map<String, Integer> stopSeconds = new HashMap<>();
+                    // Fill in stopSeconds with default values in case the NextBus response doesn't
+                    // return all stops
+                    for (ShuttleList.Stop stop : route.stops) {
+                        stopSeconds.put(stop.tag, Integer.MAX_VALUE);
+                    }
                     for (Schedule schedule : response.body().schedule) {
                         if (schedule.dirTitleBecauseNoPredictions != null) {
                             Log.d(TAG, "Shuttle " + routeName +
                                     " is not currently running or NextBus is down.");
                         } else {
-                            for (Message message : schedule.message) {
-                                Log.d(TAG, "Schedule message: " + message.text + ", priority " +
-                                        message.priority);
+                            if (schedule.message != null) {
+                                for (Message message : schedule.message) {
+                                    Log.d(TAG, "Schedule message: " + message.text + ", priority " +
+                                            message.priority);
+                                }
                             }
                             if (schedule.direction.predictions != null) {
                                 for (Prediction p : schedule.direction.predictions) {
@@ -253,11 +260,13 @@ public class ShuttleSchedule extends AppCompatActivity {
                     List<Map<String, ?>> stops = new ArrayList<>();
                     for (int i = 0; i < route.stops.size(); i++) {
                         ShuttleList.Stop stop = route.stops.get(i);
+                        String title = stop.title;
+                        title = title.replaceAll("Massachusetts", "Mass");
                         if (stopMap.containsKey(stop.tag)) {
-                            stops.add(createItem(isArriving(i, stopSeconds), stop.title,
+                            stops.add(createItem(isArriving(i, stopSeconds), title,
                                     stopMap.get(stop.tag)));
                         } else {
-                            stops.add(createItem(false, stop.title, ""));
+                            stops.add(createItem(false, title, ""));
                         }
                     }
                     shuttleStopList.setAdapter(new SimpleAdapter(context, stops,

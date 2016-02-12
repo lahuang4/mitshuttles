@@ -31,26 +31,37 @@ public class ShuttleList extends AppCompatActivity {
     private boolean configured = false;
 
     private static final String MIT = "mit";
-    // TODO: Support Charles River EZRide shuttles.
+    private static final String CHARLES_RIVER = "charles-river";
+    private static final String MBTA = "mbta";
+
+    private static int numAgencies;
+
     private String[] daytimeShuttleNames = {
             "Kendall to Charles Park",
             "Tech Shuttle",
             "Boston Daytime",
-//            "EZRide - Evening",
-//            "EZRide - Midday",
-//            "EZRide - Morning"
+            "EZRide - Morning",
+            "EZRide - Midday"
     };
     private String[] nighttimeShuttleNames = {
             "Boston East",
             "Boston West",
             "Somerville",
-            "Campus Shuttle"
+            "Campus Shuttle",
+            "EZRide - Evening"
+    };
+    private String[] otherShuttleNames = {
+            "1 Bus"
     };
 
     private Retrofit retrofit;
     private NextBus nextBus;
     static Map<String, Route> routes;
     static Map<String, Integer> descriptions;
+    static Map<String, String> routeAgencies;
+
+    private static int numAgenciesLoaded = 0;
+    private static Object numAgenciesLoadedLock = new Object();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,20 +70,25 @@ public class ShuttleList extends AppCompatActivity {
         // Get the NextBus route configuration.
         routes = new HashMap<>();
         descriptions = new HashMap<>();
+        routeAgencies = new HashMap<>();
         descriptions.put("Kendall to Charles Park", R.string.kendchar_text);
         descriptions.put("Tech Shuttle", R.string.tech_text);
         descriptions.put("Boston Daytime", R.string.boston_text);
+        descriptions.put("EZRide - Morning", R.string.morning_text);
+        descriptions.put("EZRide - Midday", R.string.midday_text);
         descriptions.put("Boston East", R.string.saferidebostone_text);
         descriptions.put("Boston West", R.string.saferidebostonw_text);
         descriptions.put("Somerville", R.string.saferidesomerville_text);
         descriptions.put("Campus Shuttle", R.string.saferidecampshut_text);
+        descriptions.put("EZRide - Evening", R.string.evening_text);
+        descriptions.put("1 Bus", R.string.one_text);
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.NEXTBUS_URL)
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build();
         nextBus = retrofit.create(NextBus.class);
 
-        getConfig();
+        setUpList();
     }
 
     @Override
@@ -80,8 +96,17 @@ public class ShuttleList extends AppCompatActivity {
         super.onResume();
         // If we didn't manage to set up successfully previously, try again.
         if (!configured) {
-            getConfig();
+            setUpList();
         }
+    }
+
+    private void setUpList() {
+        numAgencies = 3;
+        getConfig(MIT);
+        getConfig(CHARLES_RIVER);
+        // We get just the 1 bus route for MBTA, since requesting all routes will exceed the limit
+        // for NextBus api responses
+        getConfig(MBTA, "1");
     }
 
     @Root(name = "body")
@@ -138,20 +163,24 @@ public class ShuttleList extends AppCompatActivity {
         String lon;
     }
 
-    private void getConfig() {
-        Call<ConfigBody> call = nextBus.getConfig("routeConfig", MIT);
+    private void getConfig(final String agency) {
+        Call<ConfigBody> call = nextBus.getConfig("routeConfig", agency);
         call.enqueue(new Callback<ConfigBody>() {
             @Override
             public void onResponse(Response<ConfigBody> response) {
                 List<Route> routeList = response.body().routes;
                 for (Route r : routeList) {
                     Log.d(TAG, "Adding route " + r.title);
+                    // Make some titles look nicer
                     if (r.title.contains("Saferide")) {
                         r.title = r.title.substring("Saferide ".length());
                     }
+                    if (agency.equals(CHARLES_RIVER)) {
+                        r.title = "EZRide - " + r.title;
+                    }
                     routes.put(r.title, r);
+                    routeAgencies.put(r.title, agency);
                 }
-                Log.d(TAG, "Assembled config.");
                 configured = true;
                 for (String s : routes.keySet()) {
                     String stopStr = "";
@@ -160,7 +189,54 @@ public class ShuttleList extends AppCompatActivity {
                     }
                     Log.d(TAG, s + ": " + stopStr);
                 }
-                buildShuttleList();
+                synchronized (numAgenciesLoadedLock) {
+                    numAgenciesLoaded++;
+                    if (numAgenciesLoaded == numAgencies) {
+                        Log.d(TAG, "Assembled config.");
+                        // All agencies loaded, build shuttle list
+                        buildShuttleList();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                t.printStackTrace();
+                setContentView(R.layout.network_error_message);
+            }
+        });
+    }
+
+    private void getConfig(final String agency, String route) {
+        Call<ConfigBody> call = nextBus.getConfig("routeConfig", agency, route);
+        call.enqueue(new Callback<ConfigBody>() {
+            @Override
+            public void onResponse(Response<ConfigBody> response) {
+                List<Route> routeList = response.body().routes;
+                for (Route r : routeList) {
+                    Log.d(TAG, "Adding route " + r.title);
+                    if (r.title.equals("1")) {
+                        r.title = "1 Bus";
+                    }
+                    routes.put(r.title, r);
+                    routeAgencies.put(r.title, agency);
+                }
+                configured = true;
+                for (String s : routes.keySet()) {
+                    String stopStr = "";
+                    for (Stop stop : routes.get(s).stops) {
+                        stopStr += stop.tag + ", ";
+                    }
+                    Log.d(TAG, s + ": " + stopStr);
+                }
+                synchronized (numAgenciesLoadedLock) {
+                    numAgenciesLoaded++;
+                    if (numAgenciesLoaded == numAgencies) {
+                        Log.d(TAG, "Assembled config.");
+                        // All agencies loaded, build shuttle list
+                        buildShuttleList();
+                    }
+                }
             }
 
             @Override
@@ -179,6 +255,8 @@ public class ShuttleList extends AppCompatActivity {
                 daytimeShuttleNames));
         adapter.addSection("Nighttime Saferide Shuttles:", new ArrayAdapter(this,
                 R.layout.list_item, nighttimeShuttleNames));
+        adapter.addSection("Other Shuttles:", new ArrayAdapter(this,
+                R.layout.list_item, otherShuttleNames));
 
         setContentView(R.layout.activity_shuttle_list);
         ListView shuttleListView = (ListView)findViewById(R.id.shuttle_list);
@@ -189,7 +267,7 @@ public class ShuttleList extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String value = (String) parent.getItemAtPosition(position);
                 Intent intent = new Intent(parent.getContext(), ShuttleSchedule.class);
-                intent.putExtra("Agency", MIT);
+                intent.putExtra("Agency", routeAgencies.get(value));
                 intent.putExtra("Route", value);
                 startActivity(intent);
             }

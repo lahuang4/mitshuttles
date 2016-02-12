@@ -15,6 +15,10 @@ public interface NextBus {
                                            @Query("a") String agent);
 
     @GET("publicXMLFeed")
+    Call<ShuttleList.ConfigBody> getConfig(@Query("command") String command,
+                                           @Query("a") String agent, @Query("r") String route);
+
+    @GET("publicXMLFeed")
     Call<ShuttleSchedule.PredictionBody> getPrediction(@Query("command") String command,
                                                        @Query("a") String agent,
                                                        @Query("r") String route,
