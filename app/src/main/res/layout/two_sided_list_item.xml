@@ -23,27 +23,34 @@
             android:paddingTop="@dimen/list_vertical_margin"
             android:paddingBottom="@dimen/list_vertical_margin"
             android:paddingRight="@dimen/list_horizontal_margin"
+            android:maxLength="25"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
-        <TextView
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/two_sided_list_right"
-            android:layout_alignParentRight="true"
-            android:paddingTop="@dimen/list_vertical_margin"
-            android:paddingBottom="@dimen/list_vertical_margin"
-            android:paddingLeft="@dimen/list_horizontal_margin"
-            android:paddingRight="@dimen/list_horizontal_margin"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/two_sided_list_right_select"
-            android:layout_alignParentRight="true"
-            android:paddingTop="@dimen/list_vertical_margin"
-            android:paddingBottom="@dimen/list_vertical_margin"
-            android:paddingLeft="@dimen/list_horizontal_margin"
-            android:paddingRight="@dimen/list_horizontal_margin"
-            style="@style/SelectedStyle"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:id="@+id/two_sided_list_right_container">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/two_sided_list_right"
+                android:layout_alignParentRight="true"
+                android:paddingTop="@dimen/list_vertical_margin"
+                android:paddingBottom="@dimen/list_vertical_margin"
+                android:paddingLeft="@dimen/list_horizontal_margin"
+                android:paddingRight="@dimen/list_horizontal_margin"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/two_sided_list_right_select"
+                android:layout_alignParentRight="true"
+                android:paddingTop="@dimen/list_vertical_margin"
+                android:paddingBottom="@dimen/list_vertical_margin"
+                android:paddingLeft="@dimen/list_horizontal_margin"
+                android:paddingRight="@dimen/list_horizontal_margin"
+                style="@style/SelectedStyle"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+        </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

@@ -255,6 +255,7 @@ public class ShuttleSchedule extends AppCompatActivity {
                     }
                     adapterStops.clear();
                     for (int i = 0; i < route.stops.size(); i++) {
+                        // Make some stop names look nicer
                         ShuttleList.Stop stop = route.stops.get(i);
                         String title = stop.title;
                         if (title.equals("Simmons hall")) {
