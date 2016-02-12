@@ -254,7 +254,7 @@ public class ShuttleList extends AppCompatActivity {
         SeparatedListAdapter adapter = new SeparatedListAdapter(this);
         adapter.addSection("Daytime Shuttles:", new ArrayAdapter<>(this, R.layout.list_item,
                 daytimeShuttleNames));
-        adapter.addSection("Nighttime Saferide Shuttles:", new ArrayAdapter(this,
+        adapter.addSection("Nighttime Shuttles:", new ArrayAdapter(this,
                 R.layout.list_item, nighttimeShuttleNames));
         adapter.addSection("Other Shuttles:", new ArrayAdapter(this,
                 R.layout.list_item, otherShuttleNames));
