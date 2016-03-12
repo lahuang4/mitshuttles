@@ -60,7 +60,7 @@ public class ShuttleList extends AppCompatActivity {
     static Map<String, Integer> descriptions;
     static Map<String, String> routeAgencies;
 
-    private static int numAgenciesLoaded = 0;
+    private int numAgenciesLoaded = 0;
     private static Object numAgenciesLoadedLock = new Object();
 
     @Override
