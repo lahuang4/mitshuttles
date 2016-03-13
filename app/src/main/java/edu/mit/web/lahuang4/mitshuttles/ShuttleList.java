@@ -124,6 +124,9 @@ public class ShuttleList extends AppCompatActivity {
         @ElementList(inline = true)
         List<Stop> stops;
 
+        @ElementList(inline = true)
+        List<Direction> directions;
+
         @Attribute
         String tag;
 
@@ -149,6 +152,21 @@ public class ShuttleList extends AppCompatActivity {
         String lonMax;
     }
 
+    @Root(name = "direction", strict = false)
+    public static class Direction {
+        @ElementList(inline = true)
+        List<DirStop> stops;
+
+        @Attribute
+        String tag;
+
+        @Attribute
+        String title;
+
+        @Attribute
+        String name;
+    }
+
     @Root(name = "stop", strict = false)
     public static class Stop {
         @Attribute
@@ -162,10 +180,27 @@ public class ShuttleList extends AppCompatActivity {
 
         @Attribute
         String lon;
+
+        String dir;
+    }
+
+    @Root(name = "stop")
+    public static class DirStop {
+        @Attribute
+        String tag;
     }
 
     private void getConfig(final String agency) {
         Call<ConfigBody> call = nextBus.getConfig("routeConfig", agency);
+        getRouteInformation(agency, call);
+    }
+
+    private void getConfig(final String agency, String route) {
+        Call<ConfigBody> call = nextBus.getConfig("routeConfig", agency, route);
+        getRouteInformation(agency, call);
+    }
+
+    private void getRouteInformation(final String agency, Call<ConfigBody> call) {
         call.enqueue(new Callback<ConfigBody>() {
             @Override
             public void onResponse(Response<ConfigBody> response) {
@@ -176,51 +211,25 @@ public class ShuttleList extends AppCompatActivity {
                     if (r.title.contains("Saferide")) {
                         r.title = r.title.substring("Saferide ".length());
                     }
+                    if (r.title.equals("1")) {
+                        r.title = "1 Bus";
+                    }
                     if (agency.equals(CHARLES_RIVER)) {
                         r.title = "EZRide - " + r.title;
                     }
                     routes.put(r.title, r);
                     routeAgencies.put(r.title, agency);
-                }
-                configured = true;
-                for (String s : routes.keySet()) {
-                    String stopStr = "";
-                    for (Stop stop : routes.get(s).stops) {
-                        stopStr += stop.tag + ", ";
-                    }
-                    Log.d(TAG, s + ": " + stopStr);
-                }
-                synchronized (numAgenciesLoadedLock) {
-                    numAgenciesLoaded++;
-                    if (numAgenciesLoaded == numAgencies) {
-                        Log.d(TAG, "Assembled config.");
-                        // All agencies loaded, build shuttle list
-                        buildShuttleList();
-                    }
-                }
-            }
 
-            @Override
-            public void onFailure(Throwable t) {
-                t.printStackTrace();
-                setContentView(R.layout.network_error_message);
-            }
-        });
-    }
-
-    private void getConfig(final String agency, String route) {
-        Call<ConfigBody> call = nextBus.getConfig("routeConfig", agency, route);
-        call.enqueue(new Callback<ConfigBody>() {
-            @Override
-            public void onResponse(Response<ConfigBody> response) {
-                List<Route> routeList = response.body().routes;
-                for (Route r : routeList) {
-                    Log.d(TAG, "Adding route " + r.title);
-                    if (r.title.equals("1")) {
-                        r.title = "1 Bus";
+                    // Include direction information in the stops
+                    Map<String, String> stopDirs = new HashMap<>();
+                    for (Direction dir : r.directions) {
+                        for (DirStop stop : dir.stops) {
+                            stopDirs.put(stop.tag, dir.tag);
+                        }
                     }
-                    routes.put(r.title, r);
-                    routeAgencies.put(r.title, agency);
+                    for (Stop stop : r.stops) {
+                        stop.dir = stopDirs.get(stop.tag);
+                    }
                 }
                 configured = true;
                 for (String s : routes.keySet()) {

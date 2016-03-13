@@ -227,6 +227,10 @@ public class ShuttleSchedule extends AppCompatActivity {
         public int getMinutes() {
             return Integer.parseInt(minutes);
         }
+
+        public String getDirTag() {
+            return dirTag;
+        }
     }
 
     private void refreshShuttleSchedule() {
@@ -274,8 +278,12 @@ public class ShuttleSchedule extends AppCompatActivity {
         call.enqueue(new Callback<PredictionBody>() {
             @Override
             public void onResponse(Response<PredictionBody> response) {
+                // stopMap stores (stop tag, time of arrival) pairs
                 Map<String, String> stopMap = new HashMap<>();
+                // stopSeconds stores (stop tag, seconds until arrival) pairs
                 Map<String, Integer> stopSeconds = new HashMap<>();
+                // stopDirs stores (stop tag, direction tag) pairs
+                Map<String, String> stopDirs = new HashMap<>();
                 // Fill in stopSeconds with default values in case the NextBus response doesn't
                 // return all stops
                 for (ShuttleList.Stop stop : route.stops) {
@@ -295,6 +303,8 @@ public class ShuttleSchedule extends AppCompatActivity {
                                     getETA(schedule.direction.predictions.get(0).getMinutes()));
                             stopSeconds.put(schedule.stopTag,
                                     schedule.direction.predictions.get(0).getSeconds());
+                            stopDirs.put(schedule.stopTag,
+                                    schedule.direction.predictions.get(0).getDirTag());
                         }
                     }
                 }

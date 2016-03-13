@@ -2,18 +2,30 @@ package edu.mit.web.lahuang4.mitshuttles;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class MapActivity extends AppCompatActivity {
 
+    private static final String TAG = "ShuttleMap";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Construct URL from arguments
         String agency = getIntent().getStringExtra("Agency");
         String routeTag = getIntent().getStringExtra("Route Tag");
+        String url = "http://www.nextbus.com/googleMap/?a=" + agency + "&r=" + routeTag;
+        if (getIntent().hasExtra("Direction") && getIntent().hasExtra("Stop")) {
+            String direction = getIntent().getStringExtra("Direction");
+            String stop = getIntent().getStringExtra("Stop");
+            url += "&d=" + direction + "&s=" + stop;
+        }
+
+        Log.d(TAG, "Opening URL " + url);
 
         setContentView(R.layout.activity_map);
 
@@ -35,6 +47,6 @@ public class MapActivity extends AppCompatActivity {
             }
         });
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("http://www.nextbus.com/googleMap/?a=" + agency + "&r=" + routeTag);
+        webView.loadUrl(url);
     }
 }
