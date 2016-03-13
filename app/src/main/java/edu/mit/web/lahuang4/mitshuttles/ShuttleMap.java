@@ -7,7 +7,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class MapActivity extends AppCompatActivity {
+public class ShuttleMap extends AppCompatActivity {
 
     private static final String TAG = "ShuttleMap";
 

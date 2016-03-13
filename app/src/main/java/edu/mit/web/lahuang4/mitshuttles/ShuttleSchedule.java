@@ -96,7 +96,7 @@ public class ShuttleSchedule extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_map:
-                Intent intent = new Intent(context, MapActivity.class);
+                Intent intent = new Intent(context, ShuttleMap.class);
                 intent.putExtra("Agency", agency);
                 intent.putExtra("Route Tag", route.tag);
                 startActivity(intent);

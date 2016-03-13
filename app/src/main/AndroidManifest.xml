@@ -21,7 +21,7 @@
             android:name="edu.mit.web.lahuang4.mitshuttles.ShuttleSchedule"
             android:label="@string/title_activity_shuttle_schedule"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="edu.mit.web.lahuang4.mitshuttles.MapActivity"></activity>
+        <activity android:name=".ShuttleMap"></activity>
     </application>
 
 </manifest>
