@@ -300,14 +300,7 @@ public class ShuttleSchedule extends AppCompatActivity {
                 }
                 adapterStops.clear();
                 for (int i = 0; i < route.stops.size(); i++) {
-//                    // Make some stop names look nicer
                     ShuttleList.Stop stop = route.stops.get(i);
-//                    String title = stop.title;
-//                    if (title.equals("Simmons hall")) {
-//                        title = "Simmons Hall";
-//                    } else {
-//                        title = title.replaceAll("Massachusetts", "Mass");
-//                    }
                     if (stopMap.containsKey(stop.tag)) {
                         adapterStops.add(createItem(isArriving(i, stopSeconds), stop.title,
                                 stopMap.get(stop.tag)));
