@@ -241,9 +241,9 @@ public class ShuttleSchedule extends AppCompatActivity {
             // Make some stop names look nicer
             if (stop.title.equals("Simmons hall")) {
                 stop.title = "Simmons Hall";
-            } else {
-                stop.title = stop.title.replaceAll("Massachusetts", "Mass");
             }
+            stop.title = stop.title.replaceAll("Massachusetts", "Mass");
+            stop.title = stop.title.replaceAll("\\(Arrival\\)", "");
             stops.add(route.tag + "|" + stop.tag);
         }
         getPredictionsForStops(stops);
