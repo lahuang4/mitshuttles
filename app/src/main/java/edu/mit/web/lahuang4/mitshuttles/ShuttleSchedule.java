@@ -19,6 +19,7 @@ import org.simpleframework.xml.Root;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -107,12 +108,22 @@ public class ShuttleSchedule extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        scheduledFuture = refresher.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                refreshShuttleSchedule();
-            }
-        }, 0, REFRESH_INTERVAL, TimeUnit.SECONDS);
+        if (route.title.equals("1 Bus")) {
+            scheduledFuture = refresher.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    filter1BusStops();
+                    refreshShuttleSchedule();
+                }
+            }, 0, REFRESH_INTERVAL, TimeUnit.SECONDS);
+        } else {
+            scheduledFuture = refresher.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    refreshShuttleSchedule();
+                }
+            }, 0, REFRESH_INTERVAL, TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -220,80 +231,114 @@ public class ShuttleSchedule extends AppCompatActivity {
 
     private void refreshShuttleSchedule() {
         Log.d(TAG, "Getting schedule for " + route.tag);
+        // Compile stops for request
         List<String> stops = new ArrayList<>();
         for (ShuttleList.Stop stop : route.stops) {
+            // Make some stop names look nicer
+            if (stop.title.equals("Simmons hall")) {
+                stop.title = "Simmons Hall";
+            } else {
+                stop.title = stop.title.replaceAll("Massachusetts", "Mass");
+            }
             stops.add(route.tag + "|" + stop.tag);
         }
+        getPredictionsForStops(stops);
+    }
+
+    private void filter1BusStops() {
+        Log.d(TAG, "Getting schedule for " + route.tag);
+        // Keep only the most relevant 1 Bus stops
+        Map<String, String> stopNames = new HashMap<>();
+        stopNames.put("97", "77 Mass Ave Northbound");
+        stopNames.put("75", "77 Mass Ave Southbound");
+        stopNames.put("93", "Hynes Conv Ctr Northbound");
+        stopNames.put("79", "Hynes Conv Ctr Southbound");
+        stopNames.put("110", "Harvard Square");
+        stopNames.put("66", "Mt Auburn St @ DeWolfe St Southbound");
+        stopNames.put("102", "Central Square Northbound");
+        stopNames.put("72", "Central Square Southbound");
+        List<String> stopTags = Arrays.asList("97", "75", "93", "79", "110", "66", "102", "72");
+        List<ShuttleList.Stop> filteredStops = new ArrayList<>();
+        for (ShuttleList.Stop stop : route.stops) {
+            if (stopTags.contains(stop.tag)) {
+                stop.title = stopNames.get(stop.tag);
+                filteredStops.add(stop);
+            }
+        }
+        route.stops = filteredStops;
+    }
+
+    private void getPredictionsForStops(List<String> stops) {
         Call<PredictionBody> call = nextBus.getMultiplePredictions("predictionsForMultiStops",
                 agency, stops);
-            call.enqueue(new Callback<PredictionBody>() {
-                @Override
-                public void onResponse(Response<PredictionBody> response) {
-                    Map<String, String> stopMap = new HashMap<>();
-                    Map<String, Integer> stopSeconds = new HashMap<>();
-                    // Fill in stopSeconds with default values in case the NextBus response doesn't
-                    // return all stops
-                    for (ShuttleList.Stop stop : route.stops) {
-                        stopSeconds.put(stop.tag, Integer.MAX_VALUE);
-                    }
-                    for (Schedule schedule : response.body().schedule) {
-                        if (schedule.dirTitleBecauseNoPredictions != null) {
-                            Log.d(TAG, "Shuttle " + routeName +
-                                    " is not currently running or NextBus is down.");
-                        } else {
-                            if (schedule.direction.predictions != null) {
-                                for (Prediction p : schedule.direction.predictions) {
-                                    Log.d(TAG, "Schedule stop prediction: " + p.getMinutes() +
-                                            " minutes, or " + p.getSeconds() + " seconds");
-                                }
-                                stopMap.put(schedule.stopTag,
-                                        getETA(schedule.direction.predictions.get(0).getMinutes()));
-                                stopSeconds.put(schedule.stopTag,
-                                        schedule.direction.predictions.get(0).getSeconds());
+        call.enqueue(new Callback<PredictionBody>() {
+            @Override
+            public void onResponse(Response<PredictionBody> response) {
+                Map<String, String> stopMap = new HashMap<>();
+                Map<String, Integer> stopSeconds = new HashMap<>();
+                // Fill in stopSeconds with default values in case the NextBus response doesn't
+                // return all stops
+                for (ShuttleList.Stop stop : route.stops) {
+                    stopSeconds.put(stop.tag, Integer.MAX_VALUE);
+                }
+                for (Schedule schedule : response.body().schedule) {
+                    if (schedule.dirTitleBecauseNoPredictions != null) {
+                        Log.d(TAG, "Shuttle " + routeName +
+                                " is not currently running or NextBus is down.");
+                    } else {
+                        if (schedule.direction.predictions != null) {
+                            for (Prediction p : schedule.direction.predictions) {
+                                Log.d(TAG, "Schedule stop prediction: " + p.getMinutes() +
+                                        " minutes, or " + p.getSeconds() + " seconds");
                             }
+                            stopMap.put(schedule.stopTag,
+                                    getETA(schedule.direction.predictions.get(0).getMinutes()));
+                            stopSeconds.put(schedule.stopTag,
+                                    schedule.direction.predictions.get(0).getSeconds());
                         }
-                    }
-                    adapterStops.clear();
-                    for (int i = 0; i < route.stops.size(); i++) {
-                        // Make some stop names look nicer
-                        ShuttleList.Stop stop = route.stops.get(i);
-                        String title = stop.title;
-                        if (title.equals("Simmons hall")) {
-                            title = "Simmons Hall";
-                        } else {
-                            title = title.replaceAll("Massachusetts", "Mass");
-                        }
-                        if (stopMap.containsKey(stop.tag)) {
-                            adapterStops.add(createItem(isArriving(i, stopSeconds), title,
-                                    stopMap.get(stop.tag)));
-                        } else {
-                            adapterStops.add(createItem(false, title, ""));
-                        }
-                    }
-                    if (listAdapter == null) {
-                        listAdapter = new SimpleAdapter(context, adapterStops,
-                                R.layout.two_sided_list_item,
-                                new String[]{ITEM_ICON, ITEM_LEFT, ITEM_RIGHT, ITEM_RIGHT_SELECT},
-                                new int[]{R.id.two_sided_list_icon, R.id.two_sided_list_left,
-                                        R.id.two_sided_list_right,
-                                        R.id.two_sided_list_right_select});
-                        shuttleStopList.setAdapter(listAdapter);
-                    } else {
-                        listAdapter.notifyDataSetChanged();
                     }
                 }
+                adapterStops.clear();
+                for (int i = 0; i < route.stops.size(); i++) {
+//                    // Make some stop names look nicer
+                    ShuttleList.Stop stop = route.stops.get(i);
+//                    String title = stop.title;
+//                    if (title.equals("Simmons hall")) {
+//                        title = "Simmons Hall";
+//                    } else {
+//                        title = title.replaceAll("Massachusetts", "Mass");
+//                    }
+                    if (stopMap.containsKey(stop.tag)) {
+                        adapterStops.add(createItem(isArriving(i, stopSeconds), stop.title,
+                                stopMap.get(stop.tag)));
+                    } else {
+                        adapterStops.add(createItem(false, stop.title, ""));
+                    }
+                }
+                if (listAdapter == null) {
+                    listAdapter = new SimpleAdapter(context, adapterStops,
+                            R.layout.two_sided_list_item,
+                            new String[]{ITEM_ICON, ITEM_LEFT, ITEM_RIGHT, ITEM_RIGHT_SELECT},
+                            new int[]{R.id.two_sided_list_icon, R.id.two_sided_list_left,
+                                    R.id.two_sided_list_right,
+                                    R.id.two_sided_list_right_select});
+                    shuttleStopList.setAdapter(listAdapter);
+                } else {
+                    listAdapter.notifyDataSetChanged();
+                }
+            }
 
-                @Override
-                public void onFailure(Throwable t) {
-                    t.printStackTrace();
-                    if (t.getMessage().contains("Element 'Error' does not have a match")) {
-                        Log.e(TAG, "Unable to retrieve information for current stop. " +
-                                "Are you sure this stop is on the specified route?");
-                    } else {
-                        setContentView(R.layout.network_error_message);
-                    }
+            @Override
+            public void onFailure(Throwable t) {
+                t.printStackTrace();
+                if (t.getMessage().contains("Element 'Error' does not have a match")) {
+                    Log.e(TAG, "Unable to retrieve information for current stop. " +
+                            "Are you sure this stop is on the specified route?");
+                } else {
+                    setContentView(R.layout.network_error_message);
                 }
-            });
+            }
+        });
     }
 
     private Map<String, ?> createItem(boolean arriving, String left, String right) {
