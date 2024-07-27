@@ -21,7 +21,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.SimpleXmlConverterFactory;
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class ShuttleList extends AppCompatActivity {
 
@@ -203,7 +203,7 @@ public class ShuttleList extends AppCompatActivity {
     private void getRouteInformation(final String agency, Call<ConfigBody> call) {
         call.enqueue(new Callback<ConfigBody>() {
             @Override
-            public void onResponse(Response<ConfigBody> response) {
+            public void onResponse(Call<ConfigBody> c, Response<ConfigBody> response) {
                 List<Route> routeList = response.body().routes;
                 for (Route r : routeList) {
                     Log.d(TAG, "Adding route " + r.title);
@@ -250,7 +250,7 @@ public class ShuttleList extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<ConfigBody> c, Throwable t) {
                 t.printStackTrace();
                 setContentView(R.layout.network_error_message);
             }

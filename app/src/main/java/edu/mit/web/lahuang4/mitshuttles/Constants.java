@@ -5,6 +5,6 @@ package edu.mit.web.lahuang4.mitshuttles;
  */
 public class Constants {
 
-    public static final String NEXTBUS_URL = "http://webservices.nextbus.com/service/";
+    public static final String NEXTBUS_URL = "https://webservices.nextbus.com/service/";
 
 }

@@ -33,7 +33,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.SimpleXmlConverterFactory;
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class ShuttleSchedule extends AppCompatActivity {
 
@@ -94,13 +94,12 @@ public class ShuttleSchedule extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_map:
-                Intent intent = new Intent(context, ShuttleMap.class);
-                intent.putExtra("Agency", agency);
-                intent.putExtra("Route Tag", route.tag);
-                startActivity(intent);
-                return true;
+        if (item.getItemId() == R.id.action_map) {
+            Intent intent = new Intent(context, ShuttleMap.class);
+            intent.putExtra("Agency", agency);
+            intent.putExtra("Route Tag", route.tag);
+            startActivity(intent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -277,7 +276,7 @@ public class ShuttleSchedule extends AppCompatActivity {
                 agency, stops);
         call.enqueue(new Callback<PredictionBody>() {
             @Override
-            public void onResponse(Response<PredictionBody> response) {
+            public void onResponse(Call<PredictionBody> c, Response<PredictionBody> response) {
                 // stopMap stores (stop tag, time of arrival) pairs
                 Map<String, String> stopMap = new HashMap<>();
                 // stopSeconds stores (stop tag, seconds until arrival) pairs
@@ -332,7 +331,7 @@ public class ShuttleSchedule extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<PredictionBody> c, Throwable t) {
                 t.printStackTrace();
                 if (t.getMessage().contains("Element 'Error' does not have a match")) {
                     Log.e(TAG, "Unable to retrieve information for current stop. " +

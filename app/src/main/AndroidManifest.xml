@@ -10,7 +10,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="edu.mit.web.lahuang4.mitshuttles.ShuttleList">
+        <activity
+            android:name="edu.mit.web.lahuang4.mitshuttles.ShuttleList"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,7 +23,7 @@
             android:name="edu.mit.web.lahuang4.mitshuttles.ShuttleSchedule"
             android:label="@string/title_activity_shuttle_schedule"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ShuttleMap"></activity>
+        <activity android:name=".ShuttleMap" android:exported="false"></activity>
     </application>
 
 </manifest>
